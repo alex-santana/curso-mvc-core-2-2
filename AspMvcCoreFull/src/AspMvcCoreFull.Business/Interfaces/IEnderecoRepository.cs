@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AspMvcCoreFull.Business.Interfaces
 {
-    public interface IEnderecoRepository
+    public interface IEnderecoRepository : IRepository<Endereco>
     {
         Task<Endereco> ObterEnderecoPorFornecedor(Guid fornecedorId);
     }

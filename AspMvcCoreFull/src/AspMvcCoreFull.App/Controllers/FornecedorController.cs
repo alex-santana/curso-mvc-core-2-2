@@ -13,11 +13,13 @@ namespace AspMvcCoreFull.App.Controllers
     {
         
         private readonly IFornecedorRepository _fornecedorRepository;
+        private readonly IEnderecoRepository _enderecoRepository;
         private readonly IMapper _mapper;
 
-        public FornecedorController(IFornecedorRepository fornecedorRepository, IMapper mapper)
+        public FornecedorController(IFornecedorRepository fornecedorRepository, IEnderecoRepository enderecoRepository, IMapper mapper)
         {
             _fornecedorRepository = fornecedorRepository;
+            _enderecoRepository = enderecoRepository;
             _mapper = mapper;
         }
 
@@ -141,5 +143,19 @@ namespace AspMvcCoreFull.App.Controllers
 
             return PartialView(viewName: "_AtualizarEndereco", new FornecedorViewModel { Endereco = fornecedor.Endereco });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AtualizarEndereco(FornecedorViewModel fornecedorViewModel)
+        {
+            if (!ModelState.IsValid) return PartialView("_AtualizarEndereco", fornecedorViewModel);
+
+            var endereco = _mapper.Map<Endereco>(fornecedorViewModel.Endereco);
+            await _enderecoRepository.Atualizar(endereco);
+
+            var url = Url.Action("ObterEndereco", "Fornecedores", new { id = fornecedorViewModel.Endereco.FornecedorId });
+            return Json(new { success = true, url });
+        }
+
     }
 }
