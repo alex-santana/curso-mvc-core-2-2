@@ -1,0 +1,13 @@
+﻿@model IEnumerable<AspMvcCoreFull.App.ViewModels.ProdutoViewModel>
+
+@{
+    ViewData["Title"] = "Novo Produto";
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<p>
+    <a asp-action="Create">Novo Produto</a>
+</p>
+
+<partial name="_ListaProdutos"  />
