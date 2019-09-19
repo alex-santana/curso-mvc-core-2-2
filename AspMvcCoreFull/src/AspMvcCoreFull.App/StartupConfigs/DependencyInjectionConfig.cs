@@ -1,5 +1,7 @@
 ﻿using AspMvcCoreFull.App.Data;
 using AspMvcCoreFull.Business.Interfaces;
+using AspMvcCoreFull.Business.Notificacoes;
+using AspMvcCoreFull.Business.Services;
 using AspMvcCoreFull.Data.Context;
 using AspMvcCoreFull.Data.Repository;
 using AutoMapper;
@@ -17,9 +19,9 @@ using System.Threading.Tasks;
 
 namespace AspMvcCoreFull.App.StartupConfigs
 {
-    public static class ResolveDependencyConfig
+    public static class DependencyInjectionConfig 
     {
-        public static IServiceCollection DependencyInjectionConfig(this IServiceCollection services)
+        public static IServiceCollection ResolveDependencies(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
 
@@ -32,7 +34,16 @@ namespace AspMvcCoreFull.App.StartupConfigs
             services.AddScoped<IFornecedorRepository, FornecedorRepository>();
             services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 
+            services.AddScoped<INotificador, Notificador>();
+            services.AddScoped<IFornecedorService, FornecedorService>();
+            services.AddScoped<IProdutoService, ProdutoService>();
+
             return services;
+        }
+
+        private static void FornecedorService()
+        {
+            throw new NotImplementedException();
         }
 
         public static IServiceCollection IdentityConfig(this IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration)

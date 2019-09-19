@@ -14,12 +14,14 @@ namespace AspMvcCoreFull.App.Controllers
         
         private readonly IFornecedorRepository _fornecedorRepository;
         private readonly IEnderecoRepository _enderecoRepository;
+        private readonly IFornecedorService _fornecedorService;
         private readonly IMapper _mapper;
 
-        public FornecedorController(IFornecedorRepository fornecedorRepository, IEnderecoRepository enderecoRepository, IMapper mapper)
+        public FornecedorController(IFornecedorRepository fornecedorRepository, IEnderecoRepository enderecoRepository, IFornecedorService fornecedorService, IMapper mapper, INotificador notificador) : base(notificador)
         {
             _fornecedorRepository = fornecedorRepository;
             _enderecoRepository = enderecoRepository;
+            _fornecedorService = fornecedorService;
             _mapper = mapper;
         }
 
@@ -58,7 +60,11 @@ namespace AspMvcCoreFull.App.Controllers
             if (!ModelState.IsValid) return View(fornecedorViewModel);
 
             var fornecedor = _mapper.Map<Fornecedor>(fornecedorViewModel);
-            await _fornecedorRepository.Adicionar(fornecedor);
+            await _fornecedorService.Adicionar(fornecedor);
+
+            if (!OperacaoValida()) return View(fornecedorViewModel);
+
+            TempData["Sucesso"] = "Fornecedor criado com sucesso";
 
             return RedirectToAction("Index");
         }
@@ -92,8 +98,11 @@ namespace AspMvcCoreFull.App.Controllers
 
 
             var fornecedor = _mapper.Map<Fornecedor>(fornecedorViewModel);
-            await _fornecedorRepository.Atualizar(fornecedor);
+            await _fornecedorService.Atualizar(fornecedor);
 
+            if (!OperacaoValida()) return View(fornecedorViewModel);
+
+            TempData["Sucesso"] = "Fornecedor atualizado com sucesso";
             return RedirectToAction(nameof(Index));
         }
 
@@ -117,8 +126,11 @@ namespace AspMvcCoreFull.App.Controllers
             var fornecedorViewModel = await ObterFornecedorEndereco(id);
             if (fornecedorViewModel == null) return NotFound();
 
-            await _fornecedorRepository.Remover(id);
+            await _fornecedorService.Remover(id);
 
+            if (!OperacaoValida()) return View(fornecedorViewModel);
+
+            TempData["Sucesso"] = "Fornecedor excluido com sucesso";
             return RedirectToAction(nameof(Index));
         }
 
@@ -151,7 +163,11 @@ namespace AspMvcCoreFull.App.Controllers
             if (!ModelState.IsValid) return PartialView("_AtualizarEndereco", fornecedorViewModel);
 
             var endereco = _mapper.Map<Endereco>(fornecedorViewModel.Endereco);
-            await _enderecoRepository.Atualizar(endereco);
+            await _fornecedorService.AtualizarEndereco(endereco);
+
+            if (!OperacaoValida()) return PartialView("_AtualizarEndereco", fornecedorViewModel);
+
+            TempData["Sucesso"] = "Endereco atualizado com sucesso";
 
             var url = Url.Action("ObterEndereco", "Fornecedores", new { id = fornecedorViewModel.Endereco.FornecedorId });
             return Json(new { success = true, url });
